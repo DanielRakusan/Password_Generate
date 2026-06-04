@@ -75,31 +75,63 @@ class Terminal:
     # Generátor hesel
     # ========================================================================
 
-    def run_generator(self):
+    def _generator_ask_step(self, step: int, total: int, title_key: str, prompt_key: str, hint_key: str) -> str:
         while True:
             self.clear_terminal()
             print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
             print()
 
-            raw_input = input(self.get_text("generator__enter_keywords")).strip()
+            step_label = self.get_text("generator__step").format(step=step, total=total)
+            print(self.color_text(step_label, "bright_black"))
+            print(self.color_text(self.get_text(title_key), "bright_yellow"))
+            print(self.color_text(self.get_text(hint_key), "bright_black"))
+            print()
 
-            passwords = self.generator.generate(raw_input)
+            value = input(self.get_text(prompt_key)).strip()
+
+            if value:
+                return value
+
+            print()
+            print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
+            input()
+
+    def run_generator(self):
+        while True:
+            platform = self._generator_ask_step(
+                1, 3,
+                "generator__step_1_title",
+                "generator__step_1_prompt",
+                "generator__step_1_hint",
+            )
+            phrase = self._generator_ask_step(
+                2, 3,
+                "generator__step_2_title",
+                "generator__step_2_prompt",
+                "generator__step_2_hint",
+            )
+            extra = self._generator_ask_step(
+                3, 3,
+                "generator__step_3_title",
+                "generator__step_3_prompt",
+                "generator__step_3_hint",
+            )
+
+            passwords = self.generator.generate(platform, phrase, extra)
 
             self.clear_terminal()
             print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
             print()
+            print(self.color_text(self.get_text("generator__results_title"), "bright_yellow"))
+            print()
 
-            if not passwords:
-                print(self.color_text(self.get_text("generator__no_keywords"), "bright_red"))
-            else:
-                print(self.color_text(self.get_text("generator__results_title"), "bright_yellow"))
-                print()
-                for i, pwd in enumerate(passwords, start=1):
-                    print(f"  {self.color_text(str(i) + '.', 'bright_black')} {self.color_text(pwd, 'bright_white')}")
-                print()
-                print(self.color_text(self.get_text("generator__copy_hint"), "bright_black"))
+            for i, pwd in enumerate(passwords, start=1):
+                print(f"  {self.color_text(str(i) + '.', 'bright_black')} {self.color_text(pwd, 'bright_white')}")
 
             print()
+            print(self.color_text(self.get_text("generator__copy_hint"), "bright_black"))
+            print()
+
             again_menu = {
                 "title_key": "generator__title",
                 "options": {

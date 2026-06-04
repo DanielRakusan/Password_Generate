@@ -23,10 +23,13 @@ class PasswordGenerator:
         return "".join(self.LEET_MAP.get(c, c) for c in word.lower())
 
     def _capitalize_all(self, words: list[str]) -> list[str]:
-        return [w.capitalize() for w in words]
+        return [(w[0].upper() + w[1:]) if w else w for w in words]
 
     def _reverse(self, word: str) -> str:
         return word[::-1]
+
+    def _initials(self, words: list[str]) -> str:
+        return "".join(w[0].upper() for w in words if w)
 
     def _random_special(self) -> str:
         return random.choice(self.SPECIAL_CHARS)
@@ -38,88 +41,48 @@ class PasswordGenerator:
         return "".join(random.choices(string.digits, k=n))
 
     # ========================================================================
-    # Generování variant
+    # Generování variant ze 3 klíčových vstupů
     # ========================================================================
 
-    def _variant_basic(self, words: list[str]) -> str:
-        """keyword1keyword2keyword3"""
-        return "".join(words)
+    def generate(self, platform: str, phrase: str, extra: str) -> list[str]:
+        plt   = platform.strip()
+        words = [w.strip() for w in phrase.replace(",", " ").split() if w.strip()]
+        ext   = extra.strip()
 
-    def _variant_capitalized(self, words: list[str]) -> str:
-        """Keyword1Keyword2Keyword3"""
-        return "".join(self._capitalize_all(words))
-
-    def _variant_leet(self, words: list[str]) -> str:
-        """k3yw0rd1K3yw0rd2"""
-        caps = self._capitalize_all(words)
-        parts = [self._leet(caps[0])] + caps[1:]
-        return "".join(parts)
-
-    def _variant_separator(self, words: list[str]) -> str:
-        """Keyword1-Keyword2-Keyword3"""
-        sep = self._random_separator()
-        return sep.join(self._capitalize_all(words))
-
-    def _variant_reversed(self, words: list[str]) -> str:
-        """Keyword1Keyword2dryw3yek"""
-        caps = self._capitalize_all(words)
-        if len(caps) > 1:
-            caps[-1] = self._reverse(caps[-1])
-        else:
-            caps[0] = self._reverse(caps[0])
-        return "".join(caps)
-
-    def _variant_with_number(self, words: list[str]) -> str:
-        """Keyword1Keyword2 + 2 číslice"""
-        return "".join(self._capitalize_all(words)) + self._random_digits()
-
-    def _variant_special_wrap(self, words: list[str]) -> str:
-        """!Keyword1Keyword2!"""
-        sc = self._random_special()
-        return sc + "".join(self._capitalize_all(words)) + sc
-
-    def _variant_leet_number_special(self, words: list[str]) -> str:
-        """k3yw0rd1K3yw0rd2 + číslice + special"""
-        base = self._leet("".join(self._capitalize_all(words)))
-        return base + self._random_digits() + self._random_special()
-
-    def _variant_mixed(self, words: list[str]) -> str:
-        """MiX — střídání velkých a malých písmen"""
-        joined = "".join(words)
-        result = ""
-        for i, ch in enumerate(joined):
-            result += ch.upper() if i % 2 == 0 else ch.lower()
-        return result + self._random_special()
-
-    def _variant_separator_leet(self, words: list[str]) -> str:
-        """k3yw0rd1_K3yw0rd2_..."""
-        sep = self._random_separator()
-        return sep.join(self._leet(w.capitalize()) for w in words)
-
-    # ========================================================================
-    # Hlavní metoda
-    # ========================================================================
-
-    def generate(self, raw_input: str) -> list[str]:
-        words = [w.strip() for w in raw_input.replace(",", " ").split() if w.strip()]
-
-        if not words:
+        if not plt or not words or not ext:
             return []
 
+        plt_cap      = plt.capitalize()
+        plt_initial  = plt[0].upper()
+        plt_leet     = self._leet(plt_cap)
+        phr_cap      = "".join(self._capitalize_all(words))
+        phr_leet     = self._leet(phr_cap)
+        phr_initials = self._initials(words)
+        sep          = self._random_separator()
+
         variants = [
-            self._variant_basic(words),
-            self._variant_capitalized(words),
-            self._variant_leet(words),
-            self._variant_separator(words),
-            self._variant_reversed(words),
-            self._variant_with_number(words),
-            self._variant_special_wrap(words),
-            self._variant_leet_number_special(words),
-            self._variant_mixed(words),
-            self._variant_separator_leet(words),
+            # Platform + phrase + extra
+            plt_cap + phr_cap + ext,
+            # Platform initial + sep + phrase + sep + extra
+            plt_initial + sep + phr_cap + sep + ext,
+            # Leet na platformě + phrase + extra
+            plt_leet + phr_cap + ext,
+            # Phrase + extra + special (platforma skryta)
+            phr_cap + ext + self._random_special(),
+            # Initials platformy + initials phrase + extra
+            plt_initial + phr_initials + ext,
+            # Phrase initials + sep + platform + sep + extra
+            phr_initials + sep + plt_cap + sep + ext,
+            # Leet na phrase + extra + initial platformy
+            phr_leet + ext + plt_initial,
+            # Platform + # + phrase + # + extra
+            plt_cap + "#" + phr_cap + "#" + ext,
+            # Obrácené extra + obrácená platforma + sep + phrase
+            self._reverse(ext) + self._reverse(plt_cap) + sep + phr_cap,
+            # Platform + phrase initials + extra + special
+            plt_cap + phr_initials + ext + self._random_special(),
         ]
 
-        # odstraníme prázdné a duplicitní záznamy
         seen = set()
         result = []
         for v in variants:
