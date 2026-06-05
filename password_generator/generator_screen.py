@@ -1,4 +1,4 @@
-from password_generator.generator import PasswordGenerator, _VARIANTS
+from password_generator.generator import PasswordGenerator
 
 
 class GeneratorScreen:
@@ -6,7 +6,7 @@ class GeneratorScreen:
     # Inicializace
     # ========================================================================
 
-    def __init__(self, terminal, generator: PasswordGenerator):
+    def __init__(self, terminal, generator):
         self.terminal  = terminal
         self.generator = generator
 
@@ -14,8 +14,10 @@ class GeneratorScreen:
     # Vstupní kroky
     # ========================================================================
 
-    def _ask_step(self, step: int, total: int, title_key: str, prompt_key: str, hint_key: str) -> str:
+    def _ask_step(self, step, total, title_key, prompt_key, hint_key):
+        # Zobrazí jeden krok průvodce a vrátí zadaný vstup.
         t = self.terminal
+
         while True:
             t.clear_terminal()
             print(t.color_text(t.get_text("generator__title"), "bright_cyan"))
@@ -40,22 +42,18 @@ class GeneratorScreen:
     # Zobrazení výsledků
     # ========================================================================
 
-    def _show_results(self, passwords: list[str]) -> None:
+    def _show_results(self, passwords):
         t = self.terminal
+
         t.clear_terminal()
         print(t.color_text(t.get_text("generator__title"), "bright_cyan"))
         print()
         print(t.color_text(t.get_text("generator__results_title"), "bright_yellow"))
         print()
 
-        for i, (pwd, (length, charset)) in enumerate(zip(passwords, _VARIANTS), start=1):
-            has_special = charset not in ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-                                          "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789")
-            tag = f"{length} zn." + (" + spec." if has_special else "")
-            tag_colored = t.color_text(f"[{tag}]", "bright_black")
-            pwd_colored  = t.color_text(pwd, "bright_white")
-            num_colored  = t.color_text(f"{i:2}.", "bright_black")
-            print(f"  {num_colored} {tag_colored}  {pwd_colored}")
+        for i, pwd in enumerate(passwords, start=1):
+            num = t.color_text(f"{i:2}.", "bright_black")
+            print(f"  {num}  {t.color_text(pwd, 'bright_white')}")
 
         print()
         print(t.color_text(t.get_text("generator__copy_hint"), "bright_black"))
@@ -65,8 +63,9 @@ class GeneratorScreen:
     # Hlavní smyčka
     # ========================================================================
 
-    def run(self) -> None:
+    def run(self):
         t = self.terminal
+
         while True:
             platform = self._ask_step(1, 3, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase   = self._ask_step(2, 3, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")

@@ -6,22 +6,23 @@ class LanguagePack:
     # Inicializace
     # ========================================================================
 
-    def __init__(self, language: str = LANGUAGE_EN):
+    def __init__(self, language=LANGUAGE_EN):
         self.language = language
 
     # ========================================================================
     # Přepínání jazyka
     # ========================================================================
 
-    def changeLanguage(self, language: str) -> None:
+    def changeLanguage(self, language):
         if language not in (LANGUAGE_CS, LANGUAGE_EN):
             raise ValueError(self.get_text("language_pack__unsupported_language"))
+
         self.language = language
 
     # ========================================================================
     # Získání textu
     # ========================================================================
 
-    def get_text(self, key: str) -> str:
+    def get_text(self, key):
         missing = LANGUAGE_TEXTS[self.language].get("language_pack__missing_key", "Missing key: {key}")
         return LANGUAGE_TEXTS[self.language].get(key, missing.format(key=key))

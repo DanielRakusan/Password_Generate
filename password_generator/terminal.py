@@ -15,22 +15,22 @@ class Terminal:
         self.generator_screen = GeneratorScreen(self, PasswordGenerator())
         self.running          = True
 
-    def run_loop(self) -> None:
+    def run_loop(self):
         while self.running:
             self.menu(self.create_main_menu())
 
-    def end_loop(self) -> None:
+    def end_loop(self):
         self.running = False
 
     # ========================================================================
     # Pomocné metody terminálu
     # ========================================================================
 
-    def clear_terminal(self) -> None:
+    def clear_terminal(self):
         if os.environ.get("TERM"):
             os.system("cls" if os.name == "nt" else "clear")
 
-    def get_terminal_colors(self) -> dict:
+    def get_terminal_colors(self):
         return {
             "black":          "\033[30m",
             "red":            "\033[31m",
@@ -51,7 +51,7 @@ class Terminal:
             "reset":          "\033[0m",
         }
 
-    def color_text(self, text: str, color: str = None) -> str:
+    def color_text(self, text, color=None):
         if color is None:
             return text
 
@@ -62,14 +62,14 @@ class Terminal:
 
         return f"{colors[color]}{text}{colors['reset']}"
 
-    def get_text(self, key: str) -> str:
+    def get_text(self, key):
         return self.language_pack.get_text(key)
 
     # ========================================================================
     # Sestavení menu
     # ========================================================================
 
-    def change_language(self) -> None:
+    def change_language(self):
         change_language = {
             "title_key": "menu__language",
             "options": {
@@ -90,7 +90,7 @@ class Terminal:
 
         self.menu(change_language)
 
-    def create_main_menu(self) -> dict:
+    def create_main_menu(self):
         return {
             "title_key": "menu__main_title",
             "options": {
@@ -118,14 +118,15 @@ class Terminal:
     # Vykreslení a ovládání menu
     # ========================================================================
 
-    def menu(self, menu_items: dict):
+    def menu(self, menu_items):
         while True:
             try:
                 self.clear_terminal()
 
                 print(self.get_text(menu_items["title_key"]))
 
-                for key, option in menu_items["options"].items():
+                for key in menu_items["options"]:
+                    option = menu_items["options"][key]
                     text = self.color_text(
                         self.get_text(option["text_key"]),
                         option.get("color"),
