@@ -1,93 +1,75 @@
-import random
-import string
+import hashlib
+
+
+CHARSET_FULL  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*?"
+CHARSET_ALNUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+CHARSET_SAFE  = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
+
+_UPPER   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+_LOWER   = "abcdefghijklmnopqrstuvwxyz"
+_DIGITS  = "0123456789"
+_SPECIAL = "!@#$%&*?"
+
+# (délka, charset)
+_VARIANTS = [
+    (16, CHARSET_FULL),
+    (12, CHARSET_FULL),
+    (20, CHARSET_FULL),
+    (16, CHARSET_ALNUM),
+    (20, CHARSET_ALNUM),
+    (12, CHARSET_ALNUM),
+    (16, CHARSET_SAFE),
+    (24, CHARSET_ALNUM),
+    (18, CHARSET_FULL),
+    (32, CHARSET_ALNUM),
+]
 
 
 class PasswordGenerator:
     # ========================================================================
-    # Tabulky pro transformace
+    # Derivace hesla — deterministická
     # ========================================================================
 
-    LEET_MAP = {
-        "a": "@", "e": "3", "i": "1", "o": "0",
-        "s": "$", "t": "7", "b": "8", "g": "9",
-    }
+    def _raw_bytes(self, platform: str, phrase: str, extra: str, variant_idx: int) -> bytes:
+        seed = f"{platform}|{phrase}|{extra}|{variant_idx}".encode("utf-8")
+        out = b""
+        current = seed
+        while len(out) < 64:
+            current = hashlib.sha256(current).digest()
+            out += current
+        return out
 
-    SPECIAL_CHARS = ["!", "@", "#", "$", "%", "&", "*", "?"]
-    SEPARATORS    = ["-", "_", ".", "|"]
+    def _derive(self, platform: str, phrase: str, extra: str, idx: int, length: int, charset: str) -> str:
+        raw = self._raw_bytes(platform, phrase, extra, idx)
+        uses_special = charset == CHARSET_FULL
 
-    # ========================================================================
-    # Pomocné transformace
-    # ========================================================================
+        # Zaručíme přítomnost každého typu znaku
+        pinned = [
+            _UPPER[raw[0] % len(_UPPER)],
+            _LOWER[raw[1] % len(_LOWER)],
+            _DIGITS[raw[2] % len(_DIGITS)],
+            _SPECIAL[raw[3] % len(_SPECIAL)] if uses_special else charset[raw[3] % len(charset)],
+        ]
 
-    def _leet(self, word: str) -> str:
-        return "".join(self.LEET_MAP.get(c, c) for c in word.lower())
+        rest = [charset[raw[i + 4] % len(charset)] for i in range(length - 4)]
+        chars = pinned + rest
 
-    def _capitalize_all(self, words: list[str]) -> list[str]:
-        return [(w[0].upper() + w[1:]) if w else w for w in words]
+        # Deterministické přemíchání (Fisher-Yates nad hashem)
+        for i in range(len(chars) - 1, 0, -1):
+            j = raw[i % len(raw)] % (i + 1)
+            chars[i], chars[j] = chars[j], chars[i]
 
-    def _reverse(self, word: str) -> str:
-        return word[::-1]
-
-    def _initials(self, words: list[str]) -> str:
-        return "".join(w[0].upper() for w in words if w)
-
-    def _random_special(self) -> str:
-        return random.choice(self.SPECIAL_CHARS)
-
-    def _random_separator(self) -> str:
-        return random.choice(self.SEPARATORS)
-
-    def _random_digits(self, n: int = 2) -> str:
-        return "".join(random.choices(string.digits, k=n))
+        return "".join(chars)
 
     # ========================================================================
-    # Generování variant ze 3 klíčových vstupů
+    # Hlavní metoda
     # ========================================================================
 
     def generate(self, platform: str, phrase: str, extra: str) -> list[str]:
-        plt   = platform.strip()
-        words = [w.strip() for w in phrase.replace(",", " ").split() if w.strip()]
-        ext   = extra.strip()
-
-        if not plt or not words or not ext:
+        if not platform.strip() or not phrase.strip() or not extra.strip():
             return []
 
-        plt_cap      = plt.capitalize()
-        plt_initial  = plt[0].upper()
-        plt_leet     = self._leet(plt_cap)
-        phr_cap      = "".join(self._capitalize_all(words))
-        phr_leet     = self._leet(phr_cap)
-        phr_initials = self._initials(words)
-        sep          = self._random_separator()
-
-        variants = [
-            # Platform + phrase + extra
-            plt_cap + phr_cap + ext,
-            # Platform initial + sep + phrase + sep + extra
-            plt_initial + sep + phr_cap + sep + ext,
-            # Leet na platformě + phrase + extra
-            plt_leet + phr_cap + ext,
-            # Phrase + extra + special (platforma skryta)
-            phr_cap + ext + self._random_special(),
-            # Initials platformy + initials phrase + extra
-            plt_initial + phr_initials + ext,
-            # Phrase initials + sep + platform + sep + extra
-            phr_initials + sep + plt_cap + sep + ext,
-            # Leet na phrase + extra + initial platformy
-            phr_leet + ext + plt_initial,
-            # Platform + # + phrase + # + extra
-            plt_cap + "#" + phr_cap + "#" + ext,
-            # Obrácené extra + obrácená platforma + sep + phrase
-            self._reverse(ext) + self._reverse(plt_cap) + sep + phr_cap,
-            # Platform + phrase initials + extra + special
-            plt_cap + phr_initials + ext + self._random_special(),
+        return [
+            self._derive(platform, phrase, extra, idx, length, charset)
+            for idx, (length, charset) in enumerate(_VARIANTS)
         ]
-
-        seen = set()
-        result = []
-        for v in variants:
-            if v and v not in seen:
-                seen.add(v)
-                result.append(v)
-
-        return result
