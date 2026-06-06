@@ -38,8 +38,18 @@ LANGUAGE_TEXTS = {
         "generator__no_input": "Vstup nemůže být prázdný. Zkuste to znovu.",
         "generator__results_title": "Vygenerovaná hesla",
         "generator__copy_hint": "Vyberte heslo a zkopírujte jej.",
+        "generator__note_hint": "Poznamenejte si číslo hesla, které jste použili!",
         "generator__back": "Zpět do hlavního menu",
         "generator__generate_again": "Generovat znovu",
+
+        # Zobrazení hesla podle čísla
+        "menu__recover_password": "Zobrazit heslo podle čísla",
+        "recover__title": "Zobrazit heslo",
+        "recover__step_4_title": "Číslo hesla",
+        "recover__step_4_prompt": "Zadejte číslo hesla (1-{max}): ",
+        "recover__step_4_hint": "(číslo, které jste si poznamenali při generování)",
+        "recover__result_title": "Vaše heslo č. {number}",
+        "recover__invalid_number": "Neplatné číslo. Zadejte číslo od 1 do {max}.",
     },
     "en": {
         # LanguagePack / jazykové hlášky
@@ -77,7 +87,17 @@ LANGUAGE_TEXTS = {
         "generator__no_input": "Input cannot be empty. Please try again.",
         "generator__results_title": "Generated passwords",
         "generator__copy_hint": "Select a password and copy it.",
+        "generator__note_hint": "Note down the number of the password you used!",
         "generator__back": "Back to main menu",
         "generator__generate_again": "Generate again",
+
+        # Show password by number
+        "menu__recover_password": "Show password by number",
+        "recover__title": "Show password",
+        "recover__step_4_title": "Password number",
+        "recover__step_4_prompt": "Enter password number (1-{max}): ",
+        "recover__step_4_hint": "(the number you noted down when generating)",
+        "recover__result_title": "Your password no. {number}",
+        "recover__invalid_number": "Invalid number. Enter a number from 1 to {max}.",
     },
 }

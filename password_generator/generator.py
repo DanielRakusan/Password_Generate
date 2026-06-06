@@ -82,3 +82,13 @@ class PasswordGenerator:
             passwords.append(pwd)
 
         return passwords
+
+    def generate_one(self, platform, phrase, extra, number):
+        # Vrátí jedno konkrétní heslo podle jeho čísla (1 až len(VARIANTS)).
+        idx = number - 1
+
+        if idx < 0 or idx >= len(self.VARIANTS):
+            return None
+
+        length, charset = self.VARIANTS[idx]
+        return self._derive_password(platform, phrase, extra, idx, length, charset)

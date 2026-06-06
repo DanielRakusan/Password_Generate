@@ -101,6 +101,12 @@ class Terminal:
                     "color": "bright_green",
                 },
                 "2": {
+                    "text_key": "menu__recover_password",
+                    "action": self.generator_screen.run_by_number,
+                    "args": (),
+                    "color": "bright_blue",
+                },
+                "3": {
                     "text_key": "menu_change_language",
                     "action": self.change_language,
                     "args": (),
