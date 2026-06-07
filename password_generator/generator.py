@@ -33,6 +33,8 @@ class PasswordGenerator:
     # Derivace jednoho hesla
     # ========================================================================
 
+    ALGORITHM = "sha256"
+
     def _get_hash_bytes(self, platform, phrase, extra, variant_idx):
         # Kombinujeme vstupy a index varianty — každý index dá jiné heslo
         seed = f"{platform}|{phrase}|{extra}|{variant_idx}".encode("utf-8")
@@ -40,7 +42,7 @@ class PasswordGenerator:
         raw = b""
         current = seed
         while len(raw) < 64:
-            current = hashlib.sha256(current).digest()
+            current = hashlib.new(self.ALGORITHM, current).digest()
             raw += current
 
         return raw

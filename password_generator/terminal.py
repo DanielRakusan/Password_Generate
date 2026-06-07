@@ -1,6 +1,5 @@
 import os
 
-from password_generator.generator import PasswordGenerator
 from password_generator.generator_screen import GeneratorScreen
 from password_generator.language_texts import LANGUAGE_CS, LANGUAGE_EN
 
@@ -12,7 +11,7 @@ class Terminal:
 
     def __init__(self, language_pack):
         self.language_pack    = language_pack
-        self.generator_screen = GeneratorScreen(self, PasswordGenerator())
+        self.generator_screen = GeneratorScreen(self)
         self.running          = True
 
     def run_loop(self):

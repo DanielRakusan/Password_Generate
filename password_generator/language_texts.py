@@ -38,7 +38,15 @@ LANGUAGE_TEXTS = {
         "generator__no_input": "Vstup nemůže být prázdný. Zkuste to znovu.",
         "generator__results_title": "Vygenerovaná hesla",
         "generator__copy_hint": "Vyberte heslo a zkopírujte jej.",
-        "generator__note_hint": "Poznamenejte si číslo hesla, které jste použili!",
+        "generator__note_hint": "Poznamenejte si: algoritmus č.{alg} + číslo hesla!",
+
+        # Výběr algoritmu
+        "algorithm__title": "Výběr algoritmu hešování",
+        "algorithm__sha256": "SHA-256  (doporučeno)",
+        "algorithm__sha512": "SHA-512",
+        "algorithm__md5": "MD5",
+        "algorithm__sha1": "SHA-1",
+        "algorithm__caesar": "Caesar",
         "generator__back": "Zpět do hlavního menu",
         "generator__generate_again": "Generovat znovu",
 
@@ -87,7 +95,15 @@ LANGUAGE_TEXTS = {
         "generator__no_input": "Input cannot be empty. Please try again.",
         "generator__results_title": "Generated passwords",
         "generator__copy_hint": "Select a password and copy it.",
-        "generator__note_hint": "Note down the number of the password you used!",
+        "generator__note_hint": "Note down: algorithm no.{alg} + password number!",
+
+        # Algorithm selection
+        "algorithm__title": "Hashing algorithm",
+        "algorithm__sha256": "SHA-256  (recommended)",
+        "algorithm__sha512": "SHA-512",
+        "algorithm__md5": "MD5",
+        "algorithm__sha1": "SHA-1",
+        "algorithm__caesar": "Caesar",
         "generator__back": "Back to main menu",
         "generator__generate_again": "Generate again",
 
