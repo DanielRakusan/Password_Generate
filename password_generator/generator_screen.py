@@ -54,6 +54,12 @@ class GeneratorScreen:
                     "action": lambda: (6, PasswordGeneratorEnigma()),
                     "args": (),
                 },
+                "0": {
+                    "text_key": "menu__back",
+                    "action": lambda: None,
+                    "args": (),
+                    "color": "bright_black",
+                },
             },
         }
 
@@ -144,7 +150,10 @@ class GeneratorScreen:
         t = self.terminal
 
         while True:
-            alg_number, generator = self._ask_algorithm()
+            result = self._ask_algorithm()
+            if result is None:
+                return
+            alg_number, generator = result
 
             platform = self._ask_step(2, 4, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase   = self._ask_step(3, 4, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
@@ -183,7 +192,10 @@ class GeneratorScreen:
         t = self.terminal
 
         while True:
-            alg_number, generator = self._ask_algorithm()
+            result = self._ask_algorithm()
+            if result is None:
+                return
+            alg_number, generator = result
 
             platform   = self._ask_step(2, 5, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase     = self._ask_step(3, 5, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")

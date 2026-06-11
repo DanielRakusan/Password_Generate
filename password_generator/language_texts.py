@@ -16,6 +16,7 @@ LANGUAGE_TEXTS = {
         # Hlavní menu
         "menu_change_language": "Změnit jazyk",
         "menu__end_loop": "Ukončit program",
+        "menu__back": "Zpět",
 
         # Výběr jazyka
         "menu__language": "Změnit jazyk",
@@ -74,6 +75,7 @@ LANGUAGE_TEXTS = {
         # Hlavní menu
         "menu_change_language": "Change language",
         "menu__end_loop": "Exit program",
+        "menu__back": "Back",
 
         # Výběr jazyka
         "menu__language": "Change language",

@@ -84,6 +84,12 @@ class Terminal:
                     "args": (LANGUAGE_EN,),
                     "color": "bright_red",
                 },
+                "0": {
+                    "text_key": "menu__back",
+                    "action": lambda: None,
+                    "args": (),
+                    "color": "bright_black",
+                },
             },
         }
 
