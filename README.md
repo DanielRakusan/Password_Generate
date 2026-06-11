@@ -1,4 +1,4 @@
-# Enigma
+# KeyForge
 
 🌐 Jazyk: Čeština | [English version](README.en.md)
 
@@ -11,7 +11,7 @@ znovu vypočítá ze stejných vstupů.
 
 ## Popis projektu
 
-Enigma umožňuje uživateli vytvářet hesla pomocí tří klíčových vstupů:
+KeyForge umožňuje uživateli vytvářet hesla pomocí tří klíčových vstupů:
 platformy, zapamatovatelné fráze a libovolného doplňujícího slova nebo čísla.
 Pro každou kombinaci vstupů aplikace vygeneruje deset variant hesla.
 Stejné vstupy vždy vrátí stejná hesla — hesla se tedy neukládají,
@@ -29,7 +29,7 @@ Projekt je zaměřený hlavně na procvičení těchto oblastí:
 ## Funkce aplikace
 
 - průvodce generováním hesla ve třech krocích (platforma, fráze, extra),
-- výběr hašovacího algoritmu před každým generováním,
+- výběr hašovacího nebo šifrovacího algoritmu před každým generováním,
 - deset variant hesla pro každou kombinaci vstupů,
 - různé délky a znakové sady pro každou variantu,
 - zobrazení konkrétního hesla podle jeho čísla,
@@ -43,7 +43,7 @@ Projekt je zaměřený hlavně na procvičení těchto oblastí:
 - objektově orientované programování a dědičnost,
 - konzolové uživatelské rozhraní s ANSI barvami,
 - hašovací funkce přes standardní knihovnu `hashlib`,
-- deterministická derivace hesel (SHA-256, SHA-512, MD5, SHA-1, Caesar),
+- deterministická derivace hesel (SHA-256, SHA-512, MD5, SHA-1, Caesar, Enigma),
 - vícejazyčnost — texty odděleny od logiky aplikace.
 
 ## Struktura projektu
@@ -57,6 +57,7 @@ Password_Generate/
 │   ├── generator_md5.py
 │   ├── generator_sha1.py
 │   ├── generator_caesar.py
+│   ├── generator_enigma.py
 │   ├── generator_screen.py
 │   ├── terminal.py
 │   ├── language_pack.py
@@ -83,6 +84,13 @@ vlastnost — název použitého algoritmu. Logika derivace zůstává stejná.
 Dědí ze základního generátoru a přepíše metodu derivace hesla.
 Před mapováním bajtů na znaky rotuje výstupní abecedu o posun vypočítaný
 ze vstupů — to je podstata Caesarovy šifry aplikované na výstupní abecedu.
+
+### `PasswordGeneratorEnigma`
+
+Dědí ze základního generátoru a přepíše metodu derivace hesla.
+Pracuje se třemi rotory, jejichž počáteční pozice jsou odvozeny ze vstupů.
+Každý znak posune rotory podobně jako historický šifrovací stroj Enigma —
+výsledný posun se mění s každou pozicí v hesle.
 
 ### `GeneratorScreen`
 
@@ -117,7 +125,7 @@ Zadejte číslo volby:
 
 ### 2. Výběr algoritmu
 
-Před každým generováním hesel uživatel zvolí hašovací algoritmus:
+Před každým generováním hesel uživatel zvolí algoritmus:
 
 ```text
 Výběr algoritmu hešování
@@ -126,6 +134,7 @@ Výběr algoritmu hešování
 3: MD5
 4: SHA-1
 5: Caesar
+6: Enigma
 Zadejte číslo volby:
 ```
 
@@ -200,9 +209,9 @@ i o číslo hesla. Aplikace vrátí přesně to samé heslo.
 ## Jak hesla fungují
 
 Hesla se nevytváří náhodně — každé heslo je deterministicky vypočítáno
-ze zadaných vstupů pomocí hašovací funkce. Stejná kombinace vstupů
-vždy vrátí stejné heslo. Platforma, fráze a extra vstup nikdy nejsou
-v hesle přímo vidět.
+ze zadaných vstupů pomocí zvoleného algoritmu. Stejná kombinace vstupů
+a algoritmu vždy vrátí stejné heslo. Platforma, fráze a extra vstup
+nikdy nejsou v hesle přímo vidět.
 
 Uživatel si nemusí heslo ukládat. Stačí si zapamatovat klíčové vstupy
 a poznamenat si číslo algoritmu a číslo hesla.

@@ -3,6 +3,7 @@ from password_generator.generator_sha512  import PasswordGeneratorSHA512
 from password_generator.generator_md5     import PasswordGeneratorMD5
 from password_generator.generator_sha1    import PasswordGeneratorSHA1
 from password_generator.generator_caesar  import PasswordGeneratorCaesar
+from password_generator.generator_enigma  import PasswordGeneratorEnigma
 
 
 class GeneratorScreen:
@@ -46,6 +47,11 @@ class GeneratorScreen:
                 "5": {
                     "text_key": "algorithm__caesar",
                     "action": lambda: (5, PasswordGeneratorCaesar()),
+                    "args": (),
+                },
+                "6": {
+                    "text_key": "algorithm__enigma",
+                    "action": lambda: (6, PasswordGeneratorEnigma()),
                     "args": (),
                 },
             },

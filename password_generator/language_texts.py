@@ -47,6 +47,7 @@ LANGUAGE_TEXTS = {
         "algorithm__md5": "MD5",
         "algorithm__sha1": "SHA-1",
         "algorithm__caesar": "Caesar",
+        "algorithm__enigma": "Enigma",
         "generator__back": "Zpět do hlavního menu",
         "generator__generate_again": "Generovat znovu",
 
@@ -104,6 +105,7 @@ LANGUAGE_TEXTS = {
         "algorithm__md5": "MD5",
         "algorithm__sha1": "SHA-1",
         "algorithm__caesar": "Caesar",
+        "algorithm__enigma": "Enigma",
         "generator__back": "Back to main menu",
         "generator__generate_again": "Generate again",
 

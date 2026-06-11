@@ -1,4 +1,4 @@
-# Enigma
+# KeyForge
 
 🌐 Language: [Česká verze](README.md) | English
 
@@ -11,7 +11,7 @@ them from the same inputs every time.
 
 ## Project Description
 
-Enigma allows the user to create passwords using three keyword inputs:
+KeyForge allows the user to create passwords using three keyword inputs:
 a platform name, a memorable phrase, and any additional word or number.
 For each combination of inputs the application generates ten password variants.
 The same inputs always return the same passwords — passwords are not stored,
@@ -43,7 +43,7 @@ The project mainly focuses on practicing these areas:
 - object-oriented programming and class inheritance,
 - console user interface with ANSI colors,
 - hash functions via the standard `hashlib` library,
-- deterministic password derivation (SHA-256, SHA-512, MD5, SHA-1, Caesar),
+- deterministic password derivation (SHA-256, SHA-512, MD5, SHA-1, Caesar, Enigma),
 - multilingual support — texts separated from application logic.
 
 ## Project Structure
@@ -57,6 +57,7 @@ Password_Generate/
 │   ├── generator_md5.py
 │   ├── generator_sha1.py
 │   ├── generator_caesar.py
+│   ├── generator_enigma.py
 │   ├── generator_screen.py
 │   ├── terminal.py
 │   ├── language_pack.py
@@ -84,6 +85,13 @@ Inherits from the base generator and overrides the password derivation method.
 Before mapping bytes to characters, it rotates the output alphabet by a shift
 calculated from the inputs — that is the essence of the Caesar cipher applied
 to the output alphabet.
+
+### `PasswordGeneratorEnigma`
+
+Inherits from the base generator and overrides the password derivation method.
+It works with three rotors whose starting positions are derived from the inputs.
+Each character advances the rotors similarly to the historical Enigma encryption
+machine — the resulting shift changes with every position in the password.
 
 ### `GeneratorScreen`
 
@@ -128,6 +136,7 @@ Hashing algorithm
 3: MD5
 4: SHA-1
 5: Caesar
+6: Enigma
 Choose an option:
 ```
 
