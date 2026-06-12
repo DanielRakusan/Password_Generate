@@ -65,6 +65,83 @@ class Terminal:
         return self.language_pack.get_text(key)
 
     # ========================================================================
+    # Vstupní obrazovky
+    # ========================================================================
+
+    def ask_step(self, screen_title_key, step, total, title_key, prompt_key, hint_key):
+        while True:
+            self.clear_terminal()
+            print(self.color_text(self.get_text(screen_title_key), "bright_cyan"))
+            print()
+
+            step_label = self.get_text("generator__step").format(step=step, total=total)
+            print(self.color_text(step_label, "bright_black"))
+            print(self.color_text(self.get_text(title_key), "bright_yellow"))
+            print(self.color_text(self.get_text(hint_key), "bright_black"))
+            print()
+
+            value = input(self.get_text(prompt_key)).strip()
+
+            if value:
+                return value
+
+            print()
+            print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
+            input()
+
+    def ask_number(self, step, total, max_number):
+        while True:
+            self.clear_terminal()
+            print(self.color_text(self.get_text("recover__title"), "bright_cyan"))
+            print()
+
+            step_label = self.get_text("generator__step").format(step=step, total=total)
+            print(self.color_text(step_label, "bright_black"))
+            print(self.color_text(self.get_text("recover__step_4_title"), "bright_yellow"))
+            print(self.color_text(self.get_text("recover__step_4_hint"), "bright_black"))
+            print()
+
+            prompt = self.get_text("recover__step_4_prompt").format(max=max_number)
+            value = input(prompt).strip()
+
+            if value.isdigit():
+                number = int(value)
+                if 1 <= number <= max_number:
+                    return number
+
+            print()
+            error = self.get_text("recover__invalid_number").format(max=max_number)
+            print(self.color_text(error, "bright_red"))
+            input()
+
+    def show_results(self, passwords, alg_number):
+        self.clear_terminal()
+        print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
+        print()
+        print(self.color_text(self.get_text("generator__results_title"), "bright_yellow"))
+        print()
+
+        for i, pwd in enumerate(passwords, start=1):
+            num = self.color_text(f"{i:2}.", "bright_black")
+            print(f"  {num}  {self.color_text(pwd, 'bright_white')}")
+
+        print()
+        print(self.color_text(self.get_text("generator__copy_hint"), "bright_black"))
+        print(self.color_text(self.get_text("generator__note_hint").format(alg=alg_number), "bright_yellow"))
+        print()
+
+    def show_password(self, number, password):
+        self.clear_terminal()
+        print(self.color_text(self.get_text("recover__title"), "bright_cyan"))
+        print()
+        print(self.color_text(self.get_text("recover__result_title").format(number=number), "bright_yellow"))
+        print()
+        print(f"  {self.color_text(password, 'bright_white')}")
+        print()
+        print(self.color_text(self.get_text("generator__copy_hint"), "bright_black"))
+        print()
+
+    # ========================================================================
     # Sestavení menu
     # ========================================================================
 

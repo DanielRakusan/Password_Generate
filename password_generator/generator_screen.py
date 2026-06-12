@@ -66,83 +66,6 @@ class GeneratorScreen:
         return t.menu(algorithm_menu)
 
     # ========================================================================
-    # Vstupní kroky
-    # ========================================================================
-
-    def _ask_step(self, step, total, title_key, prompt_key, hint_key):
-        # Zobrazí jeden krok průvodce a vrátí zadaný vstup.
-        t = self.terminal
-
-        while True:
-            t.clear_terminal()
-            print(t.color_text(t.get_text("generator__title"), "bright_cyan"))
-            print()
-
-            step_label = t.get_text("generator__step").format(step=step, total=total)
-            print(t.color_text(step_label, "bright_black"))
-            print(t.color_text(t.get_text(title_key), "bright_yellow"))
-            print(t.color_text(t.get_text(hint_key), "bright_black"))
-            print()
-
-            value = input(t.get_text(prompt_key)).strip()
-
-            if value:
-                return value
-
-            print()
-            print(t.color_text(t.get_text("generator__no_input"), "bright_red"))
-            input()
-
-    def _ask_number(self, step, total, max_number):
-        t = self.terminal
-
-        while True:
-            t.clear_terminal()
-            print(t.color_text(t.get_text("recover__title"), "bright_cyan"))
-            print()
-
-            step_label = t.get_text("generator__step").format(step=step, total=total)
-            print(t.color_text(step_label, "bright_black"))
-            print(t.color_text(t.get_text("recover__step_4_title"), "bright_yellow"))
-            print(t.color_text(t.get_text("recover__step_4_hint"), "bright_black"))
-            print()
-
-            prompt = t.get_text("recover__step_4_prompt").format(max=max_number)
-            value = input(prompt).strip()
-
-            if value.isdigit():
-                number = int(value)
-                if 1 <= number <= max_number:
-                    return number
-
-            print()
-            error = t.get_text("recover__invalid_number").format(max=max_number)
-            print(t.color_text(error, "bright_red"))
-            input()
-
-    # ========================================================================
-    # Zobrazení výsledků
-    # ========================================================================
-
-    def _show_results(self, passwords, alg_number):
-        t = self.terminal
-
-        t.clear_terminal()
-        print(t.color_text(t.get_text("generator__title"), "bright_cyan"))
-        print()
-        print(t.color_text(t.get_text("generator__results_title"), "bright_yellow"))
-        print()
-
-        for i, pwd in enumerate(passwords, start=1):
-            num = t.color_text(f"{i:2}.", "bright_black")
-            print(f"  {num}  {t.color_text(pwd, 'bright_white')}")
-
-        print()
-        print(t.color_text(t.get_text("generator__copy_hint"), "bright_black"))
-        print(t.color_text(t.get_text("generator__note_hint").format(alg=alg_number), "bright_yellow"))
-        print()
-
-    # ========================================================================
     # Generování hesel
     # ========================================================================
 
@@ -155,12 +78,12 @@ class GeneratorScreen:
                 return
             alg_number, generator = result
 
-            platform = self._ask_step(2, 4, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
-            phrase   = self._ask_step(3, 4, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
-            extra    = self._ask_step(4, 4, "generator__step_3_title", "generator__step_3_prompt", "generator__step_3_hint")
+            platform = t.ask_step("generator__title", 2, 4, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
+            phrase   = t.ask_step("generator__title", 3, 4, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
+            extra    = t.ask_step("generator__title", 4, 4, "generator__step_3_title", "generator__step_3_prompt", "generator__step_3_hint")
 
             passwords = generator.generate(platform, phrase, extra)
-            self._show_results(passwords, alg_number)
+            t.show_results(passwords, alg_number)
 
             again_menu = {
                 "title_key": "generator__title",
@@ -171,11 +94,11 @@ class GeneratorScreen:
                         "args": (),
                         "color": "bright_green",
                     },
-                    "2": {
-                        "text_key": "generator__back",
+                    "0": {
+                        "text_key": "menu__back",
                         "action": lambda: "back",
                         "args": (),
-                        "color": "bright_red",
+                        "color": "bright_black",
                     },
                 },
             }
@@ -197,22 +120,13 @@ class GeneratorScreen:
                 return
             alg_number, generator = result
 
-            platform   = self._ask_step(2, 5, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
-            phrase     = self._ask_step(3, 5, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
-            extra      = self._ask_step(4, 5, "generator__step_3_title", "generator__step_3_prompt", "generator__step_3_hint")
-            number     = self._ask_number(5, 5, len(generator.VARIANTS))
+            platform = t.ask_step("recover__title", 2, 5, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
+            phrase   = t.ask_step("recover__title", 3, 5, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
+            extra    = t.ask_step("recover__title", 4, 5, "generator__step_3_title", "generator__step_3_prompt", "generator__step_3_hint")
+            number   = t.ask_number(5, 5, len(generator.VARIANTS))
 
             password = generator.generate_one(platform, phrase, extra, number)
-
-            t.clear_terminal()
-            print(t.color_text(t.get_text("recover__title"), "bright_cyan"))
-            print()
-            print(t.color_text(t.get_text("recover__result_title").format(number=number), "bright_yellow"))
-            print()
-            print(f"  {t.color_text(password, 'bright_white')}")
-            print()
-            print(t.color_text(t.get_text("generator__copy_hint"), "bright_black"))
-            print()
+            t.show_password(number, password)
 
             again_menu = {
                 "title_key": "recover__title",
@@ -223,11 +137,11 @@ class GeneratorScreen:
                         "args": (),
                         "color": "bright_green",
                     },
-                    "2": {
-                        "text_key": "generator__back",
+                    "0": {
+                        "text_key": "menu__back",
                         "action": lambda: "back",
                         "args": (),
-                        "color": "bright_red",
+                        "color": "bright_black",
                     },
                 },
             }
