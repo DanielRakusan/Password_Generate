@@ -206,10 +206,13 @@ class Terminal:
     # Vykreslení a ovládání menu
     # ========================================================================
 
-    def menu(self, menu_items):
+    def menu(self, menu_items, clear=True):
+        first_render = True
         while True:
             try:
-                self.clear_terminal()
+                if clear or not first_render:
+                    self.clear_terminal()
+                first_render = False
 
                 print(self.get_text(menu_items["title_key"]))
 
@@ -228,7 +231,6 @@ class Terminal:
                     raise ValueError(self.get_text("menu__input_not_valid"))
 
                 option = menu_items["options"][volba]
-                self.clear_terminal()
                 return option.get("action", lambda: None)(*option.get("args", ()))
 
             except ValueError:

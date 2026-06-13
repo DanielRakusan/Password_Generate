@@ -103,7 +103,7 @@ class GeneratorScreen:
                 },
             }
 
-            result = t.menu(again_menu)
+            result = t.menu(again_menu, clear=False)
             if result == "back":
                 return
 
@@ -146,6 +146,6 @@ class GeneratorScreen:
                 },
             }
 
-            result = t.menu(again_menu)
+            result = t.menu(again_menu, clear=False)
             if result == "back":
                 return
