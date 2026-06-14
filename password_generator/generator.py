@@ -37,7 +37,7 @@ class PasswordGenerator:
 
     def _get_hash_bytes(self, platform, phrase, extra, variant_idx):
         # Kombinujeme vstupy a index varianty — každý index dá jiné heslo
-        seed = f"{platform}|{phrase}|{extra}|{variant_idx}".encode("utf-8")
+        seed = f"{platform.strip().lower()}|{phrase.strip().lower()}|{extra.strip().lower()}|{variant_idx}".encode("utf-8")
 
         raw = b""
         current = seed
