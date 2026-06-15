@@ -26,32 +26,32 @@ class GeneratorScreen:
             "options": {
                 "1": {
                     "text_key": "algorithm__sha256",
-                    "action": lambda: (1, PasswordGenerator()),
+                    "action": lambda: (1, "SHA-256", PasswordGenerator()),
                     "args": (),
                 },
                 "2": {
                     "text_key": "algorithm__sha512",
-                    "action": lambda: (2, PasswordGeneratorSHA512()),
+                    "action": lambda: (2, "SHA-512", PasswordGeneratorSHA512()),
                     "args": (),
                 },
                 "3": {
                     "text_key": "algorithm__md5",
-                    "action": lambda: (3, PasswordGeneratorMD5()),
+                    "action": lambda: (3, "MD5", PasswordGeneratorMD5()),
                     "args": (),
                 },
                 "4": {
                     "text_key": "algorithm__sha1",
-                    "action": lambda: (4, PasswordGeneratorSHA1()),
+                    "action": lambda: (4, "SHA-1", PasswordGeneratorSHA1()),
                     "args": (),
                 },
                 "5": {
                     "text_key": "algorithm__caesar",
-                    "action": lambda: (5, PasswordGeneratorCaesar()),
+                    "action": lambda: (5, "Caesar", PasswordGeneratorCaesar()),
                     "args": (),
                 },
                 "6": {
                     "text_key": "algorithm__enigma",
-                    "action": lambda: (6, PasswordGeneratorEnigma()),
+                    "action": lambda: (6, "Enigma", PasswordGeneratorEnigma()),
                     "args": (),
                 },
                 "0": {
@@ -76,14 +76,14 @@ class GeneratorScreen:
             result = self._ask_algorithm()
             if result is None:
                 return
-            alg_number, generator = result
+            alg_number, alg_name, generator = result
 
             platform = t.ask_step("generator__title", 2, 4, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase   = t.ask_step("generator__title", 3, 4, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
             extra    = t.ask_step("generator__title", 4, 4, "generator__step_3_title", "generator__step_3_prompt", "generator__step_3_hint")
 
             passwords = generator.generate(platform, phrase, extra)
-            t.show_results(passwords, alg_number)
+            t.show_results(passwords, alg_number, alg_name, platform, phrase, extra)
 
             again_menu = {
                 "title_key": "generator__title",
@@ -118,7 +118,7 @@ class GeneratorScreen:
             result = self._ask_algorithm()
             if result is None:
                 return
-            alg_number, generator = result
+            alg_number, alg_name, generator = result
 
             platform = t.ask_step("recover__title", 2, 5, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase   = t.ask_step("recover__title", 3, 5, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")

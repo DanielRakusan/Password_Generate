@@ -40,6 +40,8 @@ LANGUAGE_TEXTS = {
         "generator__results_title": "Vygenerovaná hesla",
         "generator__copy_hint": "Vyberte heslo a zkopírujte jej.",
         "generator__note_hint": "Poznamenejte si: algoritmus č.{alg} + číslo hesla!",
+        "generator__save_title": "Uložte si (přesně jak jste zadali):",
+        "generator__save_number_hint": "Číslo hesla: ___  (dopište číslo hesla, které si vyberete)",
 
         # Výběr algoritmu
         "algorithm__title": "Výběr algoritmu hešování",
@@ -99,6 +101,8 @@ LANGUAGE_TEXTS = {
         "generator__results_title": "Generated passwords",
         "generator__copy_hint": "Select a password and copy it.",
         "generator__note_hint": "Note down: algorithm no.{alg} + password number!",
+        "generator__save_title": "Save (exactly as you entered):",
+        "generator__save_number_hint": "Password no.: ___  (fill in the number you choose)",
 
         # Algorithm selection
         "algorithm__title": "Hashing algorithm",

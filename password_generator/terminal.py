@@ -114,7 +114,7 @@ class Terminal:
             print(self.color_text(error, "bright_red"))
             input()
 
-    def show_results(self, passwords, alg_number):
+    def show_results(self, passwords, alg_number, alg_name, platform, phrase, extra):
         self.clear_terminal()
         print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
         print()
@@ -127,7 +127,16 @@ class Terminal:
 
         print()
         print(self.color_text(self.get_text("generator__copy_hint"), "bright_black"))
-        print(self.color_text(self.get_text("generator__note_hint").format(alg=alg_number), "bright_yellow"))
+        print()
+        print(self.color_text(self.get_text("generator__save_title"), "bright_yellow"))
+
+        p_label  = self.get_text("generator__step_1_title")
+        ph_label = self.get_text("generator__step_2_title")
+        ex_label = self.get_text("generator__step_3_title")
+
+        summary = f"  Alg. {alg_number} ({alg_name})  ·  {p_label}: {platform}  ·  {ph_label}: {phrase}  ·  {ex_label}: {extra}"
+        print(self.color_text(summary, "bright_white"))
+        print(self.color_text(self.get_text("generator__save_number_hint"), "bright_black"))
         print()
 
     def show_password(self, number, password):
