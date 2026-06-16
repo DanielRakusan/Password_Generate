@@ -15,8 +15,11 @@ class Terminal:
         self.running          = True
 
     def run_loop(self):
-        while self.running:
-            self.menu(self.create_main_menu())
+        try:
+            while self.running:
+                self.menu(self.create_main_menu())
+        except (KeyboardInterrupt, EOFError):
+            self.clear_terminal()
 
     def end_loop(self):
         self.running = False
@@ -87,7 +90,7 @@ class Terminal:
 
             print()
             print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
-            input()
+            input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
     def ask_number(self, step, total, max_number):
         while True:
@@ -112,7 +115,7 @@ class Terminal:
             print()
             error = self.get_text("recover__invalid_number").format(max=max_number)
             print(self.color_text(error, "bright_red"))
-            input()
+            input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
     def show_results(self, passwords, alg_number, alg_name, platform, phrase, extra):
         self.clear_terminal()
@@ -234,13 +237,15 @@ class Terminal:
                     print(f"{key}: {text} ")
 
                 print()
-                volba = input(self.get_text("menu__input"))
+                volba = input(self.get_text("menu__input")).strip()
 
                 if volba not in menu_items["options"]:
-                    raise ValueError(self.get_text("menu__input_not_valid"))
+                    raise ValueError()
 
                 option = menu_items["options"][volba]
                 return option.get("action", lambda: None)(*option.get("args", ()))
 
-            except ValueError:
-                print(self.get_text("menu__invalid_input"))
+            except (ValueError, KeyboardInterrupt, EOFError):
+                print()
+                print(self.color_text(self.get_text("menu__invalid_input"), "bright_red"))
+                input(self.color_text(self.get_text("error__press_enter"), "bright_black"))

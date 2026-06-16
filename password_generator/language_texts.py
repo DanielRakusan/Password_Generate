@@ -17,6 +17,7 @@ LANGUAGE_TEXTS = {
         "menu_change_language": "Změnit jazyk",
         "menu__end_loop": "Ukončit program",
         "menu__back": "Zpět",
+        "error__press_enter": "Stiskněte Enter pro pokračování...",
 
         # Výběr jazyka
         "menu__language": "Změnit jazyk",
@@ -78,6 +79,7 @@ LANGUAGE_TEXTS = {
         "menu_change_language": "Change language",
         "menu__end_loop": "Exit program",
         "menu__back": "Back",
+        "error__press_enter": "Press Enter to continue...",
 
         # Výběr jazyka
         "menu__language": "Change language",
