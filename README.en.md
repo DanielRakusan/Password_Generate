@@ -31,7 +31,7 @@ What interested me most: after each character is typed, the right rotor advances
 
 I looked up the historical rotor wiring tables for the Wehrmacht Enigma I, II and III, including Reflector B, and implemented them exactly as they were in the original machine. The starting rotor positions in the application are derived from the inputs — each combination of keyword inputs sets the rotors to a different starting position, producing a completely different password.
 
-Optionally, a custom Enigma key can be entered — any word that further shifts the rotor starting positions. If you use it, you must write it down, otherwise you won't be able to regenerate the same password.
+Optionally, a custom Enigma key can be entered — any word that completely replaces the historical rotor wiring tables with newly generated ones. Without a key the historical Wehrmacht tables are used; with a key, new wiring tables are derived from it. If you use a key, you must write it down — otherwise you won't be able to regenerate the same password.
 
 ## Application Features
 

@@ -5,6 +5,7 @@ from password_generator.generator import PasswordGenerator, CHARSET_FULL, _UPPER
 
 class PasswordGeneratorEnigma(PasswordGenerator):
     enigma_key = None
+
     # ========================================================================
     # Historická kabeláž rotorů Wehrmacht Enigma (I, II, III) a reflektor B
     # Každý seznam = zamíchaná abeceda A-Z zapsaná jako čísla (A=0, B=1 ...)
@@ -23,11 +24,35 @@ class PasswordGeneratorEnigma(PasswordGenerator):
                 10, 12,  8,  4,  1,  5, 25,  2, 22, 21,  9,  0, 19]
 
     # ========================================================================
+    # Generování vlastní kabeláže rotoru z klíče (Fisher-Yates shuffle)
+    # ========================================================================
+
+    def _make_rotor(self, key_bytes, offset):
+        rotor = list(range(26))
+        for i in range(25, 0, -1):
+            j = key_bytes[(offset + i) % len(key_bytes)] % (i + 1)
+            rotor[i], rotor[j] = rotor[j], rotor[i]
+        return rotor
+
+    def _make_reflector(self, key_bytes):
+        # Reflektor musí být involuční permutace (p[p[i]] == i, p[i] != i)
+        indices = list(range(26))
+        reflector = [0] * 26
+        i = 0
+        while len(indices) >= 2:
+            j = 1 + (key_bytes[(78 + i) % len(key_bytes)] % (len(indices) - 1))
+            a = indices.pop(0)
+            b = indices.pop(j - 1)
+            reflector[a] = b
+            reflector[b] = a
+            i += 1
+        return reflector
+
+    # ========================================================================
     # Průchod rotorem vpřed
     # ========================================================================
 
     def _rotor_forward(self, idx, rotor, pos):
-        # Posuneme vstup o aktuální pozici rotoru, najdeme v tabulce, posuneme zpátky
         return (rotor[(idx + pos) % 26] - pos) % 26
 
     # ========================================================================
@@ -35,7 +60,6 @@ class PasswordGeneratorEnigma(PasswordGenerator):
     # ========================================================================
 
     def _rotor_backward(self, idx, rotor, pos):
-        # Hledáme v tabulce kde je naše číslo a vrátíme pozici
         target = (idx + pos) % 26
         for i, val in enumerate(rotor):
             if val == target:
@@ -46,20 +70,14 @@ class PasswordGeneratorEnigma(PasswordGenerator):
     # Celý průchod Enigmou — vpřed, reflektor, zpět
     # ========================================================================
 
-    def _enigma_pass(self, idx, r1, r2, r3):
-        # Vpřed přes tři rotory
-        idx = self._rotor_forward(idx, self.ROTOR_I,   r1)
-        idx = self._rotor_forward(idx, self.ROTOR_II,  r2)
-        idx = self._rotor_forward(idx, self.ROTOR_III, r3)
-
-        # Odraz přes reflektor
-        idx = self.REFLECTOR[idx]
-
-        # Zpět přes tři rotory pozpátku
-        idx = self._rotor_backward(idx, self.ROTOR_III, r3)
-        idx = self._rotor_backward(idx, self.ROTOR_II,  r2)
-        idx = self._rotor_backward(idx, self.ROTOR_I,   r1)
-
+    def _enigma_pass(self, idx, r1, r2, r3, rotor_i, rotor_ii, rotor_iii, reflector):
+        idx = self._rotor_forward(idx, rotor_i,   r1)
+        idx = self._rotor_forward(idx, rotor_ii,  r2)
+        idx = self._rotor_forward(idx, rotor_iii, r3)
+        idx = reflector[idx]
+        idx = self._rotor_backward(idx, rotor_iii, r3)
+        idx = self._rotor_backward(idx, rotor_ii,  r2)
+        idx = self._rotor_backward(idx, rotor_i,   r1)
         return idx
 
     # ========================================================================
@@ -69,17 +87,23 @@ class PasswordGeneratorEnigma(PasswordGenerator):
     def _derive_password(self, platform, phrase, extra, variant_idx, length, charset):
         raw = self._get_hash_bytes(platform, phrase, extra, variant_idx)
 
-        # Počáteční pozice rotorů odvozeny ze seedu (0-25 jako v historické Enigmě)
+        # Počáteční pozice rotorů odvozeny ze seedu
         r1 = raw[0] % 26
         r2 = raw[1] % 26
         r3 = raw[2] % 26
 
-        # Vlastní klíč posune výchozí pozice rotorů — bez stejného klíče jiné heslo
+        # Bez klíče = historické tabulky Wehrmacht, s klíčem = vlastní tabulky
         if self.enigma_key:
             key_bytes = hashlib.sha256(self.enigma_key.encode("utf-8")).digest()
-            r1 = (r1 + key_bytes[0]) % 26
-            r2 = (r2 + key_bytes[1]) % 26
-            r3 = (r3 + key_bytes[2]) % 26
+            rotor_i   = self._make_rotor(key_bytes, 0)
+            rotor_ii  = self._make_rotor(key_bytes, 26)
+            rotor_iii = self._make_rotor(key_bytes, 52)
+            reflector = self._make_reflector(key_bytes)
+        else:
+            rotor_i   = self.ROTOR_I
+            rotor_ii  = self.ROTOR_II
+            rotor_iii = self.ROTOR_III
+            reflector = self.REFLECTOR
 
         # Zaručíme přítomnost každého typu znaku
         password = [
@@ -92,21 +116,19 @@ class PasswordGeneratorEnigma(PasswordGenerator):
             password.append(_SPECIAL[raw[3] % len(_SPECIAL)])
 
         for i in range(len(password), length):
-            # Enigma vrátí posun (0-25) podle aktuálních pozic rotorů
-            enigma_shift = self._enigma_pass(raw[i % len(raw)] % 26, r1, r2, r3)
-
-            # Posun použijeme jako dodatečný krok v znakové sadě
+            enigma_shift = self._enigma_pass(
+                raw[i % len(raw)] % 26, r1, r2, r3,
+                rotor_i, rotor_ii, rotor_iii, reflector
+            )
             idx = (raw[i % len(raw)] + enigma_shift) % len(charset)
             password.append(charset[idx])
 
-            # Kaskádové otáčení rotorů — pravý každý znak, střední každých 26, levý každých 676
             r3 = (r3 + 1) % 26
             if r3 == 0:
                 r2 = (r2 + 1) % 26
             if r2 == 0:
                 r1 = (r1 + 1) % 26
 
-        # Deterministické promíchání
         for i in range(len(password) - 1, 0, -1):
             j = raw[i % len(raw)] % (i + 1)
             password[i], password[j] = password[j], password[i]
