@@ -104,19 +104,57 @@ class Terminal:
         print(self.color_text(f"  Reflektor: {self._rotor_to_letters(ref)}", "bright_white"))
 
     def ask_enigma_config(self, step, total, ri, rii, riii, ref):
-        self.clear_terminal()
-        print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
-        print()
+        while True:
+            self.clear_terminal()
+            print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
+            print()
 
-        step_label = self.get_text("generator__step").format(step=step, total=total)
-        print(self.color_text(step_label, "bright_black"))
-        print(self.color_text(self.get_text("enigma__config_default"), "bright_yellow"))
-        print()
-        self._print_rotor_table(ri, rii, riii, ref)
-        print()
+            step_label = self.get_text("generator__step").format(step=step, total=total)
+            print(self.color_text(step_label, "bright_black"))
+            print(self.color_text(self.get_text("enigma__config_default"), "bright_yellow"))
+            print()
+            self._print_rotor_table(ri, rii, riii, ref)
+            print()
 
-        value = input(self.get_text("enigma__config_input")).strip()
-        return value if value else None
+            print(f"1: {self.color_text(self.get_text('enigma__config_use_historical'), 'bright_green')}")
+            print(f"2: {self.color_text(self.get_text('enigma__config_use_custom'), 'bright_blue')}")
+            print(f"0: {self.color_text(self.get_text('menu__back'), 'bright_black')}")
+            print()
+
+            volba = input(self.get_text("menu__input")).strip()
+
+            if volba == "0":
+                return None
+            if volba == "1":
+                return ""
+            if volba == "2":
+                key = self._ask_enigma_custom_key()
+                if key is not None:
+                    return key
+                continue
+
+            print()
+            print(self.color_text(self.get_text("menu__invalid_input"), "bright_red"))
+            input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
+
+    def _ask_enigma_custom_key(self):
+        while True:
+            self.clear_terminal()
+            print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
+            print()
+            print(self.color_text(self.get_text("enigma__key_warning"), "bright_red"))
+            print()
+
+            value = input(self.get_text("enigma__config_key_prompt")).strip()
+
+            if value == "0":
+                return None
+            if value:
+                return value
+
+            print()
+            print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
+            input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
     def show_enigma_custom_tables(self, step, total, ri, rii, riii, ref):
         self.clear_terminal()

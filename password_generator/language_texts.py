@@ -56,9 +56,11 @@ LANGUAGE_TEXTS = {
         "generator__generate_again": "Generovat znovu",
 
         # Enigma konfigurace rotorů
-        "enigma__config_default": "Historické tabulky — Wehrmacht Enigma (výchozí)",
+        "enigma__config_default": "Tabulky rotorů Enigmy — historické (Wehrmacht)",
+        "enigma__config_use_historical": "Použít historické tabulky",
+        "enigma__config_use_custom": "Zadat vlastní klíč (vygeneruje nové tabulky)",
         "enigma__config_custom": "Vlastní tabulky — vygenerovány z klíče",
-        "enigma__config_input": "Vlastní klíč (Enter = použít historické tabulky): ",
+        "enigma__config_key_prompt": "Zadejte vlastní klíč: ",
         "enigma__key_warning": "POZOR: Zapište si klíč! Bez něj heslo nevygenerujete znovu.",
         "enigma__key_label": "Enigma klíč: {key}",
 
@@ -125,9 +127,11 @@ LANGUAGE_TEXTS = {
         "generator__generate_again": "Generate again",
 
         # Enigma rotor configuration
-        "enigma__config_default": "Historical tables — Wehrmacht Enigma (default)",
+        "enigma__config_default": "Enigma rotor tables — historical (Wehrmacht)",
+        "enigma__config_use_historical": "Use historical tables",
+        "enigma__config_use_custom": "Enter custom key (generates new tables)",
         "enigma__config_custom": "Custom tables — generated from your key",
-        "enigma__config_input": "Custom key (Enter = use historical tables): ",
+        "enigma__config_key_prompt": "Enter your custom key: ",
         "enigma__key_warning": "WARNING: Write down your key! Without it you cannot regenerate the password.",
         "enigma__key_label": "Enigma key: {key}",
 

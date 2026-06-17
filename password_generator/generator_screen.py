@@ -81,7 +81,10 @@ class GeneratorScreen:
             enigma_key = None
             if alg_name == "Enigma":
                 ri, rii, riii, ref = generator.build_rotors()
-                enigma_key = t.ask_enigma_config(2, 5, ri, rii, riii, ref)
+                config = t.ask_enigma_config(2, 5, ri, rii, riii, ref)
+                if config is None:
+                    continue
+                enigma_key = config if config else None
                 if enigma_key:
                     generator.enigma_key = enigma_key
                     ri, rii, riii, ref = generator.build_rotors(enigma_key)
@@ -134,7 +137,10 @@ class GeneratorScreen:
 
             if alg_name == "Enigma":
                 ri, rii, riii, ref = generator.build_rotors()
-                enigma_key = t.ask_enigma_config(2, 6, ri, rii, riii, ref)
+                config = t.ask_enigma_config(2, 6, ri, rii, riii, ref)
+                if config is None:
+                    continue
+                enigma_key = config if config else None
                 if enigma_key:
                     generator.enigma_key = enigma_key
                     ri, rii, riii, ref = generator.build_rotors(enigma_key)
