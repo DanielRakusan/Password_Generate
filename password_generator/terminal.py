@@ -92,10 +92,13 @@ class Terminal:
             print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
             input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
-    def ask_enigma_key(self):
+    def ask_enigma_key(self, step, total):
         self.clear_terminal()
         print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
         print()
+
+        step_label = self.get_text("generator__step").format(step=step, total=total)
+        print(self.color_text(step_label, "bright_black"))
         print(self.color_text(self.get_text("enigma__key_title"), "bright_yellow"))
         print(self.color_text(self.get_text("enigma__key_hint"), "bright_black"))
         print()
