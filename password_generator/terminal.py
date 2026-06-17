@@ -92,6 +92,23 @@ class Terminal:
             print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
             input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
+    def ask_enigma_key(self):
+        self.clear_terminal()
+        print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
+        print()
+        print(self.color_text(self.get_text("enigma__key_title"), "bright_yellow"))
+        print(self.color_text(self.get_text("enigma__key_hint"), "bright_black"))
+        print()
+
+        value = input(self.get_text("enigma__key_prompt")).strip()
+
+        if value:
+            print()
+            print(self.color_text(self.get_text("enigma__key_warning"), "bright_red"))
+            input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
+
+        return value if value else None
+
     def ask_number(self, step, total, max_number):
         while True:
             self.clear_terminal()
@@ -117,7 +134,7 @@ class Terminal:
             print(self.color_text(error, "bright_red"))
             input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
-    def show_results(self, passwords, alg_number, alg_name, platform, phrase, extra):
+    def show_results(self, passwords, alg_number, alg_name, platform, phrase, extra, enigma_key=None):
         self.clear_terminal()
         print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
         print()
@@ -139,6 +156,11 @@ class Terminal:
 
         summary = f"  Alg. {alg_number} ({alg_name})  ·  {p_label}: {platform}  ·  {ph_label}: {phrase}  ·  {ex_label}: {extra}"
         print(self.color_text(summary, "bright_white"))
+
+        if enigma_key:
+            key_line = self.get_text("enigma__key_label").format(key=enigma_key)
+            print(self.color_text(f"  {key_line}", "bright_red"))
+
         print(self.color_text(self.get_text("generator__save_number_hint"), "bright_black"))
         print()
 

@@ -55,6 +55,13 @@ LANGUAGE_TEXTS = {
         "generator__back": "Zpět do hlavního menu",
         "generator__generate_again": "Generovat znovu",
 
+        # Enigma klíč
+        "enigma__key_title": "Vlastní klíč Enigmy (volitelné)",
+        "enigma__key_hint": "Libovolné slovo — bez tohoto klíče heslo znovu nevygenerujete!",
+        "enigma__key_prompt": "Klíč (Enter = přeskočit): ",
+        "enigma__key_warning": "POZOR: Zapište si klíč! Bez něj heslo nevygenerujete znovu.",
+        "enigma__key_label": "Enigma klíč: {key}",
+
         # Zobrazení hesla podle čísla
         "menu__recover_password": "Zobrazit heslo podle čísla",
         "recover__title": "Zobrazit heslo",
@@ -116,6 +123,13 @@ LANGUAGE_TEXTS = {
         "algorithm__enigma": "Enigma",
         "generator__back": "Back to main menu",
         "generator__generate_again": "Generate again",
+
+        # Enigma key
+        "enigma__key_title": "Custom Enigma Key (optional)",
+        "enigma__key_hint": "Any word — without this key you cannot regenerate the password!",
+        "enigma__key_prompt": "Key (Enter to skip): ",
+        "enigma__key_warning": "WARNING: Write down your key! Without it you cannot regenerate the password.",
+        "enigma__key_label": "Enigma key: {key}",
 
         # Show password by number
         "menu__recover_password": "Show password by number",

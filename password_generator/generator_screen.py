@@ -78,12 +78,18 @@ class GeneratorScreen:
                 return
             alg_number, alg_name, generator = result
 
+            enigma_key = None
+            if alg_name == "Enigma":
+                enigma_key = t.ask_enigma_key()
+                if enigma_key:
+                    generator.enigma_key = enigma_key
+
             platform = t.ask_step("generator__title", 2, 4, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase   = t.ask_step("generator__title", 3, 4, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")
             extra    = t.ask_step("generator__title", 4, 4, "generator__step_3_title", "generator__step_3_prompt", "generator__step_3_hint")
 
             passwords = generator.generate(platform, phrase, extra)
-            t.show_results(passwords, alg_number, alg_name, platform, phrase, extra)
+            t.show_results(passwords, alg_number, alg_name, platform, phrase, extra, enigma_key)
 
             again_menu = {
                 "title_key": "generator__title",
@@ -119,6 +125,11 @@ class GeneratorScreen:
             if result is None:
                 return
             alg_number, alg_name, generator = result
+
+            if alg_name == "Enigma":
+                enigma_key = t.ask_enigma_key()
+                if enigma_key:
+                    generator.enigma_key = enigma_key
 
             platform = t.ask_step("recover__title", 2, 5, "generator__step_1_title", "generator__step_1_prompt", "generator__step_1_hint")
             phrase   = t.ask_step("recover__title", 3, 5, "generator__step_2_title", "generator__step_2_prompt", "generator__step_2_hint")

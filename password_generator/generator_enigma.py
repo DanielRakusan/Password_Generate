@@ -1,7 +1,10 @@
+import hashlib
+
 from password_generator.generator import PasswordGenerator, CHARSET_FULL, _UPPER, _LOWER, _DIGITS, _SPECIAL
 
 
 class PasswordGeneratorEnigma(PasswordGenerator):
+    enigma_key = None
     # ========================================================================
     # Historická kabeláž rotorů Wehrmacht Enigma (I, II, III) a reflektor B
     # Každý seznam = zamíchaná abeceda A-Z zapsaná jako čísla (A=0, B=1 ...)
@@ -70,6 +73,13 @@ class PasswordGeneratorEnigma(PasswordGenerator):
         r1 = raw[0] % 26
         r2 = raw[1] % 26
         r3 = raw[2] % 26
+
+        # Vlastní klíč posune výchozí pozice rotorů — bez stejného klíče jiné heslo
+        if self.enigma_key:
+            key_bytes = hashlib.sha256(self.enigma_key.encode("utf-8")).digest()
+            r1 = (r1 + key_bytes[0]) % 26
+            r2 = (r2 + key_bytes[1]) % 26
+            r3 = (r3 + key_bytes[2]) % 26
 
         # Zaručíme přítomnost každého typu znaku
         password = [
