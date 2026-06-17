@@ -3,33 +3,40 @@
 🌐 Language: [Česká verze](README.md) | English
 
 A console application written in Python for deterministic password generation from keyword inputs.
+Passwords are never stored — the application recalculates them from the same inputs every time.
 
-The project serves as an example of a smaller object-oriented application
-with a separated generator, terminal interface, algorithm selection, and
-multilingual support. Passwords are never stored — the application recalculates
-them from the same inputs every time.
+## How It Works
 
-## Project Description
+The user provides three things: a platform name, a memorable phrase, and any extra word or number. The application uses the chosen algorithm to calculate ten password variants. The same inputs always return the same passwords — just remember them and the password is available again at any time, without being stored anywhere.
 
-KeyForge allows the user to create passwords using three keyword inputs:
-a platform name, a memorable phrase, and any additional word or number.
-For each combination of inputs the application generates ten password variants.
-The same inputs always return the same passwords — passwords are not stored,
-but recalculated on demand.
+## Algorithms
 
-The project mainly focuses on practicing these areas:
+I started with SHA-256 as the foundation — a standard hash function that reliably produces a fixed set of bytes from the inputs. Adding SHA-512, MD5 and SHA-1 was straightforward after that: each class inherits the base and only changes the algorithm name.
 
-- object-oriented programming in Python,
-- separation of responsibilities between multiple classes, each in its own file,
-- deterministic password derivation using hash functions,
-- class inheritance in Python,
-- multilingual support and separation of texts from application logic,
-- creating a console interface with colored output.
+Then I wanted to try something more interesting than yet another hashing variant.
+
+### Caesar Cipher
+
+I got curious about classic ciphers and looked up how the Caesar cipher works. Julius Caesar reportedly used it for military communication — each letter in a message is shifted by a fixed number of positions in the alphabet. A becomes B, B becomes C, and so on. Simple, but effective.
+
+I decided to incorporate this into the generator. Instead of mapping bytes directly to characters, I first rotate the entire output character set by a shift calculated from the inputs. Each combination of platform, phrase and extra word produces a different shift — and therefore a different password than plain hashing would.
+
+### Enigma
+
+While researching more ciphers I came across the Enigma machine. I found out it was an electromechanical encryption device used by the German military in World War II for secret communication. Allied intelligence considered it unbreakable for a long time.
+
+I was fascinated by how it actually worked. Enigma has three rotors — each rotor is essentially a scrambled alphabet, mapping each letter to a different letter. You press a key and the signal passes through all three rotors forward, hits a reflector that bounces it back, and passes through all three rotors again in reverse. The result is a completely different letter than the one you pressed.
+
+What interested me most: after each character is typed, the right rotor advances by one position. Every 26 characters the middle rotor advances, and every 676 characters the left rotor advances. This means that even two identical letters typed in a row get different encodings — the cipher changes with every character.
+
+I looked up the historical rotor wiring tables for the Wehrmacht Enigma I, II and III, including Reflector B, and implemented them exactly as they were in the original machine. The starting rotor positions in the application are derived from the inputs — each combination of keyword inputs sets the rotors to a different starting position, producing a completely different password.
+
+Optionally, a custom Enigma key can be entered — any word that further shifts the rotor starting positions. If you use it, you must write it down, otherwise you won't be able to regenerate the same password.
 
 ## Application Features
 
 - three-step guided wizard for password generation (platform, phrase, extra),
-- hashing algorithm selection before each generation,
+- algorithm selection before each generation (SHA-256, SHA-512, MD5, SHA-1, Caesar, Enigma),
 - ten password variants for each combination of inputs,
 - different lengths and character sets for each variant,
 - showing a specific password by its number,
@@ -43,7 +50,7 @@ The project mainly focuses on practicing these areas:
 - object-oriented programming and class inheritance,
 - console user interface with ANSI colors,
 - hash functions via the standard `hashlib` library,
-- deterministic password derivation (SHA-256, SHA-512, MD5, SHA-1, Caesar, Enigma),
+- deterministic password derivation,
 - multilingual support — texts separated from application logic.
 
 ## Project Structure
@@ -66,216 +73,63 @@ Password_Generate/
 └── README.en.md
 ```
 
-## Main Parts of the Application
-
-### `PasswordGenerator`
-
-The base generator class. It stores password variants (length, character set)
-and handles deterministic password derivation from a seed composed of the inputs
-and the variant index using SHA-256. Each variant index produces a different password.
-
-### `PasswordGeneratorSHA512`, `PasswordGeneratorMD5`, `PasswordGeneratorSHA1`
-
-Each of these classes inherits from the base generator and overrides only one
-property — the name of the algorithm used. The derivation logic remains the same.
-
-### `PasswordGeneratorCaesar`
-
-Inherits from the base generator and overrides the password derivation method.
-Before mapping bytes to characters, it rotates the output alphabet by a shift
-calculated from the inputs — that is the essence of the Caesar cipher applied
-to the output alphabet.
-
-### `PasswordGeneratorEnigma`
-
-Inherits from the base generator and overrides the password derivation method.
-It works with three rotors whose starting positions are derived from the inputs.
-Each character advances the rotors similarly to the historical Enigma encryption
-machine — the resulting shift changes with every position in the password.
-
-### `GeneratorScreen`
-
-Handles communication with the user during password generation.
-It guides the user through algorithm selection and the three keyword inputs.
-It displays the generated passwords and allows showing a specific password
-by its number.
-
-### `Terminal`
-
-Manages the console interface of the application. It contains the colored output
-system, a universal menu, language switching, and connection to screens.
-
-### `LanguagePack`
-
-Handles multilingual support. It allows switching between Czech and English
-while the application is running. No text is hardcoded in the logic — everything
-is loaded through a language dictionary in `language_texts.py`.
-
-## Application Startup
-
-### 1. Language selection
-
-After launching the application, a menu for selecting the interface language
-is displayed:
-
-```text
-Main menu
-1: Czech
-2: English
-Choose an option:
-```
-
-### 2. Algorithm selection
-
-Before each password generation the user selects a hashing algorithm:
-
-```text
-Hashing algorithm
-1: SHA-256  (recommended)
-2: SHA-512
-3: MD5
-4: SHA-1
-5: Caesar
-6: Enigma
-Choose an option:
-```
-
-### 3. Keyword inputs
-
-The wizard asks for three inputs one by one:
-
-```text
-Step 2 of 4
-Platform
-(e.g. Gmail, Facebook, Bank...)
-
-Which platform is this password for?
-```
-
-```text
-Step 3 of 4
-Phrase
-(e.g. ILoveDogs, FavoritePlaces...)
-
-Enter a sentence or phrase you will remember:
-```
-
-```text
-Step 4 of 4
-Extra
-(e.g. birth year, favourite number, nickname...)
-
-Enter a number or word as extra:
-```
-
-### 4. Results
-
-The application displays ten password variants. The user picks one
-and notes down the algorithm number and the password number:
-
-```text
-Generated passwords
-
-  1.  BzzQnS2QGIUW#HT*
-  2.  @hl&6*t$WTE9
-  3.  v&Vt6aLpO?hrQpsKzUWB
-  4.  vrz66u4YnPyScaWj
-  5.  5NEg7YeNszB9QB1ME0cN
-  6.  j8BiEXYnMtn3
-  7.  3JJYCdOPmyjfV1mk
-  8.  m4mXXKrdY3Wg1jqoxWaHcZBT
-  9.  nORwhxL*q@NXJcQ3CF
- 10.  T3E9IKFryZRDZxZZoDqt6RDVdxxlEYs2
-
-Select a password and copy it.
-Note down: algorithm no.1 + password number!
-```
-
-## Show Password by Number
-
-If the user noted the algorithm number and password number,
-they can display the same password again at any time without searching:
-
-```text
-Main menu
-1: Generate password
-2: Show password by number
-3: Change language
-5: Exit program
-Choose an option:
-```
-
-The wizard asks for the same inputs as during generation and at the end
-also for the password number. The application returns exactly the same password.
-
-## How the Passwords Work
-
-Passwords are not generated randomly — each password is deterministically
-calculated from the provided inputs using a hash function. The same combination
-of inputs always returns the same password. The platform, phrase, and extra input
-are never directly visible in the password.
-
-The user does not need to store the password anywhere. It is enough to remember
-the keyword inputs and note down the algorithm number and password number.
-
-## Installation and Running the Project
+## Running the Application
 
 ### 1. Clone the repository
 
 ```bash
 git clone https://github.com/DanielRakusan/Password_Generate.git
-```
-
-### 2. Open the project folder
-
-```bash
 cd Password_Generate
 ```
 
-### 3. Run the application
-
-On Windows, macOS, or Linux, run:
+### 2. Run
 
 ```bash
 python main.py
 ```
 
-If your system uses the `python3` command, run:
+If your system uses `python3`:
 
 ```bash
 python3 main.py
 ```
 
-### 4. Run with uv
-
-The project uses `uv` for dependency management. If you have `uv` installed:
+With `uv`:
 
 ```bash
 uv run python main.py
 ```
 
-### 5. Run in PyCharm
+### 3. Run in PyCharm
 
 1. Open the project in PyCharm.
-2. Open the `main.py` file.
-3. Right-click inside the file.
-4. Select `Run 'main'`.
+2. Open `main.py`.
+3. Right-click → `Run 'main'`.
 
-The application will start in the PyCharm console.
+## Sample Output
 
-## Possible Future Improvements
+```text
+Generated passwords
 
-- master password protection for generation,
-- export of notes to an encrypted file,
-- adding stronger algorithms such as PBKDF2 or bcrypt,
-- web version, for example in Flask or Django.
+   1.  BzzQnS2QGIUW#HT*
+   2.  @hl&6*t$WTE9
+   3.  v&Vt6aLpO?hrQpsKzUWB
+   4.  vrz66u4YnPyScaWj
+   5.  5NEg7YeNszB9QB1ME0cN
+   6.  j8BiEXYnMtn3
+   7.  3JJYCdOPmyjfV1mk
+   8.  m4mXXKrdY3Wg1jqoxWaHcZBT
+   9.  nORwhxL*q@NXJcQ3CF
+  10.  T3E9IKFryZRDZxZZoDqt6RDVdxxlEYs2
+
+Save (exactly as entered):
+  Alg. 1 (SHA-256)  ·  Platform: Gmail  ·  Phrase: ILoveDogs  ·  Extra: 1990
+  Password no.: ___
+```
 
 ## Project Goal
 
-The goal of the project is to demonstrate basic Python knowledge in a smaller,
-clear application. The project demonstrates working with classes, inheritance,
-hash functions, deterministic data derivation, multi-color console navigation,
-multilingual support, and separation of logic from the user interface.
+The project was built as an example of a smaller object-oriented Python application. I wanted to combine standard hashing with classic cipher techniques while practicing working with classes, inheritance, and console navigation.
 
 ## Author
 
