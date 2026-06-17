@@ -92,25 +92,45 @@ class Terminal:
             print(self.color_text(self.get_text("generator__no_input"), "bright_red"))
             input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
-    def ask_enigma_key(self, step, total):
+    def _rotor_to_letters(self, rotor):
+        return " ".join(chr(65 + n) for n in rotor)
+
+    def _print_rotor_table(self, ri, rii, riii, ref):
+        alphabet = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
+        print(self.color_text(f"  Vstup:     {alphabet}", "bright_black"))
+        print(self.color_text(f"  Rotor I:   {self._rotor_to_letters(ri)}", "bright_white"))
+        print(self.color_text(f"  Rotor II:  {self._rotor_to_letters(rii)}", "bright_white"))
+        print(self.color_text(f"  Rotor III: {self._rotor_to_letters(riii)}", "bright_white"))
+        print(self.color_text(f"  Reflektor: {self._rotor_to_letters(ref)}", "bright_white"))
+
+    def ask_enigma_config(self, step, total, ri, rii, riii, ref):
         self.clear_terminal()
         print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
         print()
 
         step_label = self.get_text("generator__step").format(step=step, total=total)
         print(self.color_text(step_label, "bright_black"))
-        print(self.color_text(self.get_text("enigma__key_title"), "bright_yellow"))
-        print(self.color_text(self.get_text("enigma__key_hint"), "bright_black"))
+        print(self.color_text(self.get_text("enigma__config_default"), "bright_yellow"))
+        print()
+        self._print_rotor_table(ri, rii, riii, ref)
         print()
 
-        value = input(self.get_text("enigma__key_prompt")).strip()
-
-        if value:
-            print()
-            print(self.color_text(self.get_text("enigma__key_warning"), "bright_red"))
-            input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
-
+        value = input(self.get_text("enigma__config_input")).strip()
         return value if value else None
+
+    def show_enigma_custom_tables(self, step, total, ri, rii, riii, ref):
+        self.clear_terminal()
+        print(self.color_text(self.get_text("generator__title"), "bright_cyan"))
+        print()
+
+        step_label = self.get_text("generator__step").format(step=step, total=total)
+        print(self.color_text(step_label, "bright_black"))
+        print(self.color_text(self.get_text("enigma__config_custom"), "bright_yellow"))
+        print()
+        self._print_rotor_table(ri, rii, riii, ref)
+        print()
+        print(self.color_text(self.get_text("enigma__key_warning"), "bright_red"))
+        input(self.color_text(self.get_text("error__press_enter"), "bright_black"))
 
     def ask_number(self, step, total, max_number):
         while True:

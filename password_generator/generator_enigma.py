@@ -49,6 +49,21 @@ class PasswordGeneratorEnigma(PasswordGenerator):
         return reflector
 
     # ========================================================================
+    # Sestavení tabulek rotorů — historické nebo z vlastního klíče
+    # ========================================================================
+
+    def build_rotors(self, key=None):
+        if key is None:
+            return self.ROTOR_I, self.ROTOR_II, self.ROTOR_III, self.REFLECTOR
+        key_bytes = hashlib.sha256(key.encode("utf-8")).digest()
+        return (
+            self._make_rotor(key_bytes, 0),
+            self._make_rotor(key_bytes, 26),
+            self._make_rotor(key_bytes, 52),
+            self._make_reflector(key_bytes),
+        )
+
+    # ========================================================================
     # Průchod rotorem vpřed
     # ========================================================================
 
